@@ -1,5 +1,11 @@
 const express = require("express");
 const passport = require("passport");
+const {
+  groupCreate,
+  getGroups,
+  groupDelete,
+  groupUpdate,
+} = require("../groups/controllers");
 const router = express.Router();
 
 router.post(

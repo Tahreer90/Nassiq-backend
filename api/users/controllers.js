@@ -1,4 +1,5 @@
 const User = require("../../models/User");
+const Group = require("../../models/Group");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
@@ -10,6 +11,9 @@ exports.signUp = async (req, res, next) => {
     req.body.password = await bcrypt.hash(password, saltRounds);
 
     const newUser = await User.create(req.body);
+
+    const defaultGroupData = { name: "Personal", User: newUser._id };
+    const defaultGroup = await Group.create(defaultGroupData);
 
     const payload = {
       _id: newUser._id,

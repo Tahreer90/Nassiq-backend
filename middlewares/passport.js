@@ -25,6 +25,7 @@ exports.jwtStrategy = new JWTStrategy(
     secretOrKey: process.env.SECRET_KEY,
   },
   async (jwtPayload, done) => {
+    console.log("flfdkjk");
     if (Date.now() > jwtPayload.exp) {
       done(null, false);
     }

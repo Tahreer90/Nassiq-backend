@@ -2,10 +2,7 @@ const Group = require("../../models/Group");
 
 exports.groupCreate = async (req, res, next) => {
   try {
-    if (req.file) {
-      req.body.image = `/${req.file.path}`;
-      req.body.image = req.body.image.replace("\\", "/");
-    }
+    console.log(req.user);
     req.body.owner = req.user._id;
     const newGroup = await Group.create(req.body);
     return res.status(201).json(newGroup);

@@ -18,11 +18,12 @@ app.use(express.urlencoded({ extended: false }));
 
 //Routes
 app.use(passport.initialize());
-app.use("/api/auth/", userRoutes);
-app.use("/api/group", groupRoutes);
-app.use("/api/:groupId/task", taskRoutes);
 passport.use(localStrategy);
 passport.use(jwtStrategy);
+
+app.use("/api/auth/", userRoutes);
+app.use("/api/group/", groupRoutes);
+app.use("/api/:groupId/task/", taskRoutes);
 
 app.use((err, req, res, next) => {
   res.status(err.status || 500).json({
