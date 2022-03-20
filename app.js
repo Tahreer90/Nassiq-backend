@@ -3,6 +3,7 @@ const cors = require("cors");
 const connectDb = require("./database");
 const userRoutes = require("./api/users/routes");
 const groupRoutes = require("./api/groups/routes");
+const taskRoutes = require("./api/tasks/routes");
 const passport = require("passport");
 const { localStrategy, jwtStrategy } = require("./middlewares/passport");
 const dotenv = require("dotenv");
@@ -17,8 +18,9 @@ app.use(express.urlencoded({ extended: false }));
 
 //Routes
 app.use(passport.initialize());
-app.use("/user", userRoutes);
-app.use("/group", groupRoutes);
+app.use("/api/auth/", userRoutes);
+app.use("/api/group", groupRoutes);
+app.use("/api/:groupId/task", taskRoutes);
 passport.use(localStrategy);
 passport.use(jwtStrategy);
 
