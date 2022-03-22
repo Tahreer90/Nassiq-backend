@@ -11,7 +11,11 @@ exports.signUp = async (req, res, next) => {
     req.body.image = "media/emptyUser.png";
     const newUser = await User.create(req.body);
 
-    const defaultGroupData = { name: "Personal", User: newUser._id };
+    const defaultGroupData = {
+      name: "Personal",
+      user: newUser._id,
+      owner: newUser._id,
+    };
     const defaultGroup = await Group.create(defaultGroupData);
 
     const payload = {
