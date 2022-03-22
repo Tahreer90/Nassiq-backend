@@ -51,12 +51,21 @@ exports.joinGroup = async (req, res, next) => {
     const { groupId } = req.params;
     const foundGroup = await Group.findById(groupId).populate("owner user");
     req.body.user = req.user._id;
-    await User.findByIdAndUpdate(req.user._id, {
-      $push: { group: foundGroup._id },
-    });
-    await Group.findByIdAndUpdate(groupId, {
-      $push: { user: req.body.user },
-    });
+    const userFound = foundGroup.user.find(
+      (userIs) => JSON.stringify(userIs._id) === JSON.stringify(req.user._id)
+    );
+    if (userFound) {
+      res.status(401).json("You are already in this group!");
+    } else {
+      await User.findByIdAndUpdate(req.user._id, {
+        $push: { group: foundGroup._id },
+      });
+      await Group.findByIdAndUpdate(groupId, {
+        $push: { user: req.body.user },
+      });
+
+      res.status(200).json("you have joined the group!");
+    }
   } catch (error) {
     next(error);
   }
