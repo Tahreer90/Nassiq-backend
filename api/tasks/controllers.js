@@ -1,12 +1,24 @@
 const Group = require("../../models/Group");
 const Task = require("../../models/Task");
 
-exports.getTasks = async (req, res) => {
+exports.getTasks = async (req, res, next) => {
   try {
     const tasks = await Task.find();
     return res.json(tasks);
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    next(error);
+  }
+};
+
+exports.getTasksInsideAGroup = async (req, res, next) => {
+  try {
+    const { groupId } = req.params;
+    const foundGroup = await Group.findById(groupId).populate("task");
+    if (foundGroup) {
+      res.status(200).json(foundGroup.task);
+    }
+  } catch (error) {
+    next(error);
   }
 };
 
@@ -25,7 +37,7 @@ exports.taskCreate = async (req, res, next) => {
       await Group.findByIdAndUpdate(groupId, {
         $push: { task: newtask._id },
       });
-      return res.status(201).json(newtask);
+      res.status(201).json(newtask);
     } else {
       res.status(401).json({ message: "you are not a member of this group" });
     }
@@ -34,23 +46,47 @@ exports.taskCreate = async (req, res, next) => {
   }
 };
 
-exports.taskDelete = async (req, res, next) => {
+exports.taskUpdate = async (req, res, next) => {
   try {
-    await req.task.remove();
-    res.status(204).end();
+    const user = req.user._id;
+    const { groupId } = req.params;
+    const { taskId } = req.params;
+    const foundGroup = await Group.findById(groupId);
+    const canAdd = foundGroup.user.find(
+      (userId) => JSON.stringify(userId) === JSON.stringify(user)
+    );
+    req.body.owner = req.user._id;
+    if (canAdd) {
+      req.body.group = groupId;
+      const task = await Task.findByIdAndUpdate(
+        taskId,
+        req.body,
+        { new: true, runValidators: true } // returns the updated task
+      );
+      res.status(200).json(task);
+    } else {
+      res.status(401).json({ message: "you are not a member of this group" });
+    }
   } catch (err) {
     next(error);
   }
 };
 
-exports.taskUpdate = async (req, res, next) => {
+exports.taskDelete = async (req, res, next) => {
   try {
-    const task = await Task.findByIdAndUpdate(
-      { _id: req.task.id },
-      req.body,
-      { new: true, runValidators: true } // returns the updated task
+    const user = req.user._id;
+    const { groupId } = req.params;
+    const { taskId } = req.params;
+    const foundGroup = await Group.findById(groupId);
+    const canAdd = foundGroup.user.find(
+      (userId) => JSON.stringify(userId) === JSON.stringify(user)
     );
-    res.status(204).end();
+    if (canAdd) {
+      await Task.findByIdAndDelete(taskId);
+      res.status(204).end();
+    } else {
+      res.status(401).json({ message: "you are not a member of this group" });
+    }
   } catch (err) {
     next(error);
   }
