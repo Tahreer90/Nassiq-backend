@@ -1,20 +1,19 @@
 const express = require("express");
 const passport = require("passport");
 const {
-  groupCreate,
-  getGroups,
-  groupDelete,
-  groupUpdate,
-} = require("../groups/controllers");
+  taskCreate,
+  getTasks,
+  taskDelete,
+  taskUpdate,
+} = require("./controllers");
 const router = express.Router();
 
+router.get("/", getTasks);
 router.post(
-  "/new",
+  "/new/:groupId",
   passport.authenticate("jwt", { session: false }),
-  groupCreate
+  taskCreate
 );
-router.get("/", getGroups);
-router.delete("/:groupId", groupDelete);
-router.put("/:groupId", groupUpdate);
-
+router.delete("/delete/:taskId", taskDelete);
+router.put("/:taskId", taskUpdate);
 module.exports = router;

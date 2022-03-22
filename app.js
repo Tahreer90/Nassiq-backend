@@ -34,7 +34,7 @@ passport.use(jwtStrategy);
 //Routes
 app.use("/api/auth/", userRoutes);
 app.use("/api/group/", groupRoutes);
-app.use("/api/:groupId/task/", taskRoutes);
+app.use("/api/task/", taskRoutes);
 
 // Error handiling
 app.use((err, req, res, next) => {

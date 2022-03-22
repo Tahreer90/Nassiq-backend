@@ -1,8 +1,10 @@
 const mongoose = require("mongoose");
 // const mongooseSlugPlugin = require("mongoose-slug-plugin");
-const UserSchema = new mongoose.Schema({
+const TaskSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  Group: [{ type: mongoose.Schema.Types.ObjectId, ref: "Group" }],
+  group: [{ type: mongoose.Schema.Types.ObjectId, ref: "Group" }],
+  owner: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  type: String,
 });
 
-module.exports = mongoose.model("Task", UserSchema);
+module.exports = mongoose.model("Task", TaskSchema);
