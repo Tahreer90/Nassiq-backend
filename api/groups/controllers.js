@@ -48,6 +48,15 @@ exports.groupDelete = async (req, res, next) => {
 
 exports.joinGroup = async (req, res, next) => {
   try {
+    const { groupId } = req.params;
+    const foundGroup = await Group.findById(groupId).populate("owner user");
+    req.body.user = req.user._id;
+    await User.findByIdAndUpdate(req.user._id, {
+      $push: { group: foundGroup._id },
+    });
+    await Group.findByIdAndUpdate(groupId, {
+      $push: { user: req.body.user },
+    });
   } catch (error) {
     next(error);
   }
