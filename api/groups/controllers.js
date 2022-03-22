@@ -45,3 +45,10 @@ exports.groupDelete = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.joinGroup = async (req, res, next) => {
+  try {
+  } catch (error) {
+    next(error);
+  }
+};

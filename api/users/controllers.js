@@ -73,11 +73,13 @@ exports.update = async (req, res, next) => {
     }
 
     const updateUser = await User.findByIdAndUpdate(req.user._id, req.body);
+
     const payload = {
       _id: updateUser._id,
       username: updateUser.username,
       exp: Date.now() + +process.env.EXPTIMER,
     };
+
     const token = jwt.sign(JSON.stringify(payload), process.env.SECRET_KEY);
     res.status(201).json({ token });
   } catch (error) {
