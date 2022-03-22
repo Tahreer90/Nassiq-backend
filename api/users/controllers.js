@@ -5,11 +5,10 @@ const jwt = require("jsonwebtoken");
 
 exports.signUp = async (req, res, next) => {
   try {
-    const { password, username } = req.body;
-
+    const { password } = req.body;
     const saltRounds = 10;
     req.body.password = await bcrypt.hash(password, saltRounds);
-
+    req.body.image = "media/emptyUser.png";
     const newUser = await User.create(req.body);
 
     const defaultGroupData = { name: "Personal", User: newUser._id };
@@ -18,7 +17,7 @@ exports.signUp = async (req, res, next) => {
     const payload = {
       _id: newUser._id,
       username: newUser.username,
-      exp: Date.now() + process.env.EXPTIME,
+      exp: Date.now() + +process.env.EXPTIMER,
     };
     const token = jwt.sign(JSON.stringify(payload), process.env.SECRET_KEY);
 
@@ -27,13 +26,14 @@ exports.signUp = async (req, res, next) => {
     next(error);
   }
 };
+
 exports.signIn = async (req, res, next) => {
   try {
     const newUser = req.user;
     const payload = {
       _id: newUser._id,
       username: newUser.username,
-      exp: Date.now() + +process.env.EXPTIME,
+      exp: Date.now() + +process.env.EXPTIMER,
     };
     const token = jwt.sign(JSON.stringify(payload), process.env.SECRET_KEY);
 
@@ -49,5 +49,34 @@ exports.getUsers = async (req, res) => {
     return res.json(users);
   } catch (error) {
     return res.status(500).json({ message: error.message });
+  }
+};
+
+exports.update = async (req, res, next) => {
+  try {
+    if (req.file) {
+      req.body.image = req.file.path;
+    }
+
+    if (req.body.newpassword) {
+      const password = req.body.newpassword;
+      const saltRounds = 10;
+      req.body.password = await bcrypt.hash(password, saltRounds);
+    }
+
+    if (req.body.newusername) {
+      req.body.username = req.body.newusername;
+    }
+
+    const updateUser = await User.findByIdAndUpdate(req.user._id, req.body);
+    const payload = {
+      _id: updateUser._id,
+      username: updateUser.username,
+      exp: Date.now() + +process.env.EXPTIMER,
+    };
+    const token = jwt.sign(JSON.stringify(payload), process.env.SECRET_KEY);
+    res.status(201).json({ token });
+  } catch (error) {
+    next(error);
   }
 };
