@@ -18,6 +18,10 @@ exports.signUp = async (req, res, next) => {
     };
     const defaultGroup = await Group.create(defaultGroupData);
 
+    await User.findByIdAndUpdate(newUser._id, {
+      $push: { group: defaultGroup._id },
+    });
+
     const payload = {
       _id: newUser._id,
       username: newUser.username,
