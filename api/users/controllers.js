@@ -67,6 +67,7 @@ exports.getUsers = async (req, res) => {
 
 exports.update = async (req, res, next) => {
   try {
+    console.log(req.body);
     if (req.file) {
       req.body.image = req.file.path;
     }
