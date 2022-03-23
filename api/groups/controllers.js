@@ -3,7 +3,7 @@ const User = require("../../models/User");
 
 exports.getGroups = async (req, res) => {
   try {
-    const groups = await Group.find().populate("user owner");
+    const groups = await Group.find().populate("user owner task");
     return res.json(groups);
   } catch (error) {
     return res.status(500).json({ message: error.message });

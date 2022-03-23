@@ -18,15 +18,19 @@ exports.signUp = async (req, res, next) => {
     };
     const defaultGroup = await Group.create(defaultGroupData);
 
-    await User.findByIdAndUpdate(newUser._id, {
-      $push: { group: defaultGroup._id },
-    });
+    const newUser2 = await User.findByIdAndUpdate(
+      newUser._id,
+      {
+        $push: { group: defaultGroup._id },
+      },
+      { new: true }
+    );
 
     const payload = {
-      _id: newUser._id,
-      username: newUser.username,
-      image: newUser.image,
-      group: newUser.group,
+      _id: newUser2._id,
+      username: newUser2.username,
+      image: newUser2.image,
+      group: newUser2.group,
       exp: Date.now() + +process.env.EXPTIMER,
     };
     const token = jwt.sign(JSON.stringify(payload), process.env.SECRET_KEY);
