@@ -21,6 +21,7 @@ exports.signUp = async (req, res, next) => {
     const payload = {
       _id: newUser._id,
       username: newUser.username,
+      image: newUser.image,
       exp: Date.now() + +process.env.EXPTIMER,
     };
     const token = jwt.sign(JSON.stringify(payload), process.env.SECRET_KEY);
@@ -37,6 +38,7 @@ exports.signIn = async (req, res, next) => {
     const payload = {
       _id: newUser._id,
       username: newUser.username,
+      image: newUser.image,
       exp: Date.now() + +process.env.EXPTIMER,
     };
     const token = jwt.sign(JSON.stringify(payload), process.env.SECRET_KEY);
