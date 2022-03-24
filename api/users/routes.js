@@ -5,11 +5,19 @@ const router = express.Router();
 const upload = require("../../middlewares/multer");
 
 // controllers
-const { signUp, signIn, getUsers, update } = require("./controllers");
+const {
+  signUp,
+  signIn,
+  getUsers,
+  update,
+  getSingleUser,
+} = require("./controllers");
 
 // pathes
 // - get all users
 router.get("/all", getUsers);
+// - get user by id
+router.get("/:userId", getSingleUser);
 // - signup a user
 router.post("/signup", signUp);
 // - signin a user

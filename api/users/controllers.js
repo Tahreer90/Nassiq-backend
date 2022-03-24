@@ -69,6 +69,17 @@ exports.getUsers = async (req, res) => {
   }
 };
 
+exports.getSingleUser = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    const singleUser = await User.findById(userId);
+    console.log(singleUser);
+    return res.json(singleUser);
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
 exports.update = async (req, res, next) => {
   try {
     if (req.file) {
