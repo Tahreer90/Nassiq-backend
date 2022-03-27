@@ -5,6 +5,8 @@ const TaskSchema = new mongoose.Schema({
   group: [{ type: mongoose.Schema.Types.ObjectId, ref: "Group" }],
   owner: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   type: String,
+  isChecked: Boolean,
+  edit: Boolean,
 });
 
 module.exports = mongoose.model("Task", TaskSchema);
