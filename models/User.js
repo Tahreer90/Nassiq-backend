@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const UserSchema = new mongoose.Schema({
   image: String,
   username: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
+  password: { type: String, required: true, minlength: 6 },
   group: [{ type: mongoose.Schema.Types.ObjectId, ref: "Group" }],
 });
 
