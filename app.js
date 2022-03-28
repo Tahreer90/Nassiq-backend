@@ -6,6 +6,7 @@ const passport = require("passport");
 const dotenv = require("dotenv");
 const path = require("path");
 const { localStrategy, jwtStrategy } = require("./middlewares/passport");
+const http = require("http");
 dotenv.config();
 
 // importing routes
@@ -15,6 +16,9 @@ const taskRoutes = require("./api/tasks/routes");
 
 // init
 const app = express();
+const server = http.createServer(app);
+const { Server } = require("socket.io");
+const io = new Server(server);
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -50,7 +54,24 @@ app.use((req, res, next) => {
   res.json({ msg: "path was not found" });
 });
 
-app.listen(process.env.PORT || 5000, () => {
+// app.listen(process.env.PORT || 5000, () => {
+//   console.log(`app is running on port ${process.env.PORT}`);
+//   connectDb();
+// });
+
+// socket
+io.on("connection", (socket) => {
+  console.log("a user connected");
+  socket.on("frontend", (msg) => {
+    if (msg == "Add") socket.broadcast.emit("backend", "Add");
+    if (msg == "Check") socket.broadcast.emit("backend", "Check");
+    if (msg == "Join") socket.broadcast.emit("backend", "Join");
+
+    console.log("message: " + msg);
+  });
+});
+
+server.listen(process.env.PORT || 5000, () => {
   console.log(`app is running on port ${process.env.PORT}`);
   connectDb();
 });
