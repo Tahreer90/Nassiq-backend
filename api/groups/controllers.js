@@ -12,6 +12,7 @@ exports.getGroups = async (req, res) => {
 
 exports.groupCreate = async (req, res, next) => {
   try {
+    console.log(req.body);
     req.body.user = req.user._id;
     req.body.owner = req.user._id;
     const newGroup = await Group.create(req.body);

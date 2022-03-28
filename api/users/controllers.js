@@ -6,6 +6,8 @@ const jwt = require("jsonwebtoken");
 exports.signUp = async (req, res, next) => {
   try {
     const { password } = req.body;
+    if (password.length < 6)
+      res.status(400).json("password length must be at least 6 characters");
     const saltRounds = 10;
     req.body.password = await bcrypt.hash(password, saltRounds);
     req.body.image = "media/emptyUser.png";
@@ -89,6 +91,8 @@ exports.update = async (req, res, next) => {
 
     if (req.body.newpassword) {
       const password = req.body.newpassword;
+      if (password.length < 6)
+        res.status(400).json("password length must be at least 6 characters");
       const saltRounds = 10;
       req.body.password = await bcrypt.hash(password, saltRounds);
     }
