@@ -82,8 +82,10 @@ exports.getSingleUser = async (req, res, next) => {
 
 exports.update = async (req, res, next) => {
   try {
-    console.log(req.body);
+    // console.log("file", req);
+    // console.log("body", req.body);
     if (req.file) {
+      // console.log(req.file.path);
       req.body.image = req.file.path;
     }
 
