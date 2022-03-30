@@ -9,6 +9,8 @@ const {
   groupCreate,
   groupDelete,
   joinGroup,
+  removeUserFromGroup,
+  leaveGroup,
 } = require("./controllers");
 
 // path
@@ -32,4 +34,11 @@ router.post(
   passport.authenticate("jwt", { session: false }),
   joinGroup
 );
+router.put(
+  "/leave/:groupId",
+  passport.authenticate("jwt", { session: false }),
+  leaveGroup
+);
+router.delete("remove/:groupId/:userId", removeUserFromGroup);
+
 module.exports = router;
