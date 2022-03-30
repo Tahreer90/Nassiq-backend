@@ -71,3 +71,51 @@ exports.joinGroup = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.leaveGroup = async (req, res, next) => {
+  try {
+    const { groupId } = req.params;
+    req.body.user = req.user._id;
+
+    const foundGroup = await Group.findById(groupId).populate("owner user");
+    const userFound = foundGroup.user.find(
+      (userIs) => JSON.stringify(userIs._id) === JSON.stringify(req.user._id)
+    );
+    console.log(foundGroup);
+
+    if (foundGroup) {
+      userFound.group = userFound.group.filter(
+        (groupid1) => groupid1 != groupId
+      );
+      foundGroup.user = foundGroup.user.filter(
+        (user) => user._id != req.body.user
+      );
+
+      await Group.findByIdAndUpdate(groupId, {
+        foundGroup,
+      });
+      await User.findByIdAndUpdate(req.body.user, userFound);
+      res.status(200).json("left group seccessfully");
+    } else {
+      res.status(401).json("you don't have this group");
+    }
+
+    // const foundUser = await User.findById(req.body.user);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.removeUserFromGroup = async (req, res, next) => {
+  try {
+    const { groupId } = req.params;
+    const { userId } = req.params;
+    const foundGroup = await Group.findById(groupId).populate("owner user");
+    foundGroup.user.filter((user) => user._id != userId);
+    await Group.findByIdAndUpdate(groupId, {
+      foundGroup,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
