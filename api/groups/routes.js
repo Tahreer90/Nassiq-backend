@@ -39,6 +39,6 @@ router.put(
   passport.authenticate("jwt", { session: false }),
   leaveGroup
 );
-router.delete("remove/:groupId/:userId", removeUserFromGroup);
+router.put("/remove/:groupId/:userId", removeUserFromGroup);
 
 module.exports = router;

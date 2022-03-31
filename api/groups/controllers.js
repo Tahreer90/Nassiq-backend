@@ -75,32 +75,36 @@ exports.joinGroup = async (req, res, next) => {
 exports.leaveGroup = async (req, res, next) => {
   try {
     const { groupId } = req.params;
-    req.body.user = req.user._id;
+    const userId = req.user._id;
 
+    // remove user from group
     const foundGroup = await Group.findById(groupId).populate("owner user");
-    const userFound = foundGroup.user.find(
-      (userIs) => JSON.stringify(userIs._id) === JSON.stringify(req.user._id)
+    const stillInGroup = foundGroup.user.find(
+      (user) => JSON.stringify(user._id) == JSON.stringify(userId)
     );
-    console.log(foundGroup);
-
-    if (foundGroup) {
-      userFound.group = userFound.group.filter(
-        (groupid1) => groupid1 != groupId
-      );
-      foundGroup.user = foundGroup.user.filter(
-        (user) => user._id != req.body.user
-      );
-
-      await Group.findByIdAndUpdate(groupId, {
-        foundGroup,
+    if (stillInGroup) {
+      // console.log(foundGroup);
+      foundGroup.user = foundGroup.user.filter((user) => {
+        console.log(user._id, userId);
+        return JSON.stringify(user._id) != JSON.stringify(userId);
       });
-      await User.findByIdAndUpdate(req.body.user, userFound);
-      res.status(200).json("left group seccessfully");
-    } else {
-      res.status(401).json("you don't have this group");
-    }
+      // console.log(foundGroup);
 
-    // const foundUser = await User.findById(req.body.user);
+      // remove group from user
+      const foundUser = await User.findById(userId);
+      // console.log(foundUser);
+      foundUser.group = foundUser.group.filter(
+        (group) => JSON.stringify(group) != JSON.stringify(groupId)
+      );
+      // console.log(foundUser);
+
+      await Group.findByIdAndUpdate(groupId, foundGroup);
+      await User.findByIdAndUpdate(userId, foundUser);
+
+      res.status(201).json("Left group!");
+    } else {
+      res.status(300).json("Group not found in your list of groups!");
+    }
   } catch (error) {
     next(error);
   }
@@ -110,11 +114,36 @@ exports.removeUserFromGroup = async (req, res, next) => {
   try {
     const { groupId } = req.params;
     const { userId } = req.params;
+
+    // remove user from group
     const foundGroup = await Group.findById(groupId).populate("owner user");
-    foundGroup.user.filter((user) => user._id != userId);
-    await Group.findByIdAndUpdate(groupId, {
-      foundGroup,
+    const stillInGroup = foundGroup.user.find((user) => {
+      console.log(user._id, userId);
+      return JSON.stringify(user._id) == JSON.stringify(userId);
     });
+    if (stillInGroup) {
+      // console.log(foundGroup);
+      foundGroup.user = foundGroup.user.filter((user) => {
+        console.log(user._id, userId);
+        return JSON.stringify(user._id) != JSON.stringify(userId);
+      });
+      // console.log(foundGroup);
+
+      // remove group from user
+      const foundUser = await User.findById(userId);
+      // console.log(foundUser);
+      foundUser.group = foundUser.group.filter(
+        (group) => JSON.stringify(group) != JSON.stringify(groupId)
+      );
+      // console.log(foundUser);
+
+      await Group.findByIdAndUpdate(groupId, foundGroup);
+      await User.findByIdAndUpdate(userId, foundUser);
+
+      res.status(201).json("Left group!");
+    } else {
+      res.status(300).json("Group not found in your list of groups!");
+    }
   } catch (error) {
     next(error);
   }
